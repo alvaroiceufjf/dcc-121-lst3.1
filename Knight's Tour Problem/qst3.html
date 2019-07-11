@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Knight’s Tour Problem</title>
+    <style>
+        #casa {
+            display: inline-grid;
+            border: solid 1px black;
+            width: 50px;
+            height: 50px;
+            margin-top: auto;
+            margin-left: auto;
+            margin-bottom: -4px;
+            background-color: white;
+        }
+
+        #tabuleiro {
+            display: block;
+            border-style: solid;
+            border-color: black;
+            background-color: lightgray;
+            width: 416px;
+            height: 416px;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style="margin-left: 58px">Knight’s Tour Problem</h1>
+    <div id="tabuleiro"></div>
+
+    <script>
+        var matriz = [];
+        var tab = document.getElementById("tabuleiro");
+
+        for (var i = 0; i < 8; i++) {
+            matriz[i] = [];
+            for (var j = 0; j < 8; j++) {
+                var novoDiv = document.createElement("div");
+                novoDiv.id = "casa";
+                matriz[i][j] = novoDiv;
+                tab.appendChild(matriz[i][j]);
+            }
+        }
+
+        var img = document.createElement("img");
+        img.src = "Cavalo.png";
+        img.style.width = "30px";
+        img.style.height = "30px";
+        img.style.marginLeft = "9px";
+        img.style.marginTop = "9px";
+        img.style.position = "absolute";
+        document.getElementById('casa').appendChild(img);
+
+        matriz[0][0].addEventListener("click", primeiraJogada(0, 0))
+
+
+        function primeiraJogada(i, j) {
+            
+            matriz[i][j].style.backgroundColor = "yellow";
+            matriz[i + 1][j + 2].style.backgroundColor = "green";
+            matriz[i + 2][j + 1].style.backgroundColor = "green";
+
+            matriz[1][2].addEventListener("click", moveCavalo(i, j));
+            matriz[2][1].addEventListener("click", moveCavalo);
+        }
+
+        function moveCavalo(i, j) {
+            matriz[i][j].style.backgroundColor = "red";
+            var img = document.createElement("img");
+            img.src = "Cavalo.png";
+            img.style.width = "30px";
+            img.style.height = "30px";
+            img.style.marginLeft = "9px";
+            img.style.marginTop = "9px";
+            img.style.position = "absolute";
+            this.appendChild(img);
+        }
+
+    </script>
+</body>
+
+</html>
