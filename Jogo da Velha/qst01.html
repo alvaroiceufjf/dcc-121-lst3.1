@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>Jogo Da Velha</title>
+    <style>
+        h1 {
+            font-size: 100px;
+            text-align: center;
+            color: rgba(0, 45, 248, 0.479);
+            text-shadow: -1px 0 rgb(255, 255, 255), 0 1px rgb(255, 255, 255), 1px 0 rgb(255, 255, 255), 0 -1px rgb(255, 255, 255);
+        }
+
+        #jogador {
+            font: normal 18px sans-serif;
+            font-style: oblique;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        #vencedor {
+            width: auto;
+            text-align: center;
+            font: 42px Arial;
+            color: rgb(17, 0, 255);
+        }
+
+        #tipoElemento {
+            color: red;
+            font: normal 18px;
+        }
+
+        table {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #jogo {
+            font: normal 18px Arial;
+            padding: 20px;
+            width: 20%;
+            margin-left: 40%;
+            margin-top: 1%;
+            margin-right: 45%;
+        }
+
+        td {
+            border: 1px solid rgb(0, 0, 0);
+            width: 85px;
+            height: 85px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="formJogo">
+        <p id="jogador">Jogador: <span id="tipoElemento"></span></p>
+        <table>
+            <tr id="r1">
+                <td id="a1">
+                </td>
+                <td id="a2">
+                </td>
+                <td id="a3">
+                </td>
+            </tr>
+            <tr id="r2">
+                <td id="b1">
+                </td>
+                <td id="b2">
+                </td>
+                <td id="b3">
+                </td>
+            </tr>
+            <tr id="r3">
+                <td id="c1">
+                </td>
+                <td id="c2">
+                </td>
+                <td id="c3">
+                </td>
+            </tr>
+        </table>
+        <button id="jogo">Novo Jogo!</button>
+        <p id="vencedor"></p>
+    </div>
+
+    <script>
+        var elemento = document.querySelector("#tipoElemento");
+        var jogoY = document.querySelector("#jogo");
+        var vencedor = document.querySelector("#vencedor");
+        var r1 = document.querySelector("#r1");
+        var r2 = document.querySelector("#r2");
+        var r3 = document.querySelector("#r3");
+        var vazio = 0;
+        var x = 1;
+        var circulo = 2;
+        var matrix = [];
+        var tipoElemento = 1;
+        var gamer = true;
+        var contador = 0;
+        vencedor.textContent = "";
+
+        for (var i = 0; i < 3; i++) {
+            matrix[i] = [];
+        }
+
+        function apagaMatrix() {
+            for (var i = 0; i < 3; i++) {
+                for (var j = 0; j < 3; j++) {
+                    matrix[i][j] = vazio;
+                }
+            }
+            contador = 0;
+        }
+        function removeElemento(element) {
+            while (element.firstChild) {
+                element.removeChild(element.firstChild);
+            }
+        }
+        function atualizaJogador() {
+            if (tipoElemento == 1)
+                elemento.textContent = "X";
+            else
+                elemento.textContent = "Círculo";
+
+        }
+        function matrixP() {
+            for (var j = 0; j < 3; j++) {
+
+                removeElemento(r1.children[j]);
+                removeElemento(r2.children[j]);
+                removeElemento(r3.children[j]);
+
+                var bolinha = document.createElement("img");
+                bolinha.src = "circulo.png";
+
+
+                var xiz = document.createElement("img");
+                xiz.src = "x.png";
+
+
+                if (matrix[0][j] == circulo)
+                    r1.children[j].appendChild(bolinha);
+                else if (matrix[0][j] == x)
+                    r1.children[j].appendChild(xiz);
+                else if (matrix[0][j] == vazio)
+                    removeElemento(r2.children[j]);
+
+                if (matrix[1][j] == circulo)
+                    r2.children[j].appendChild(bolinha);
+                else if (matrix[1][j] == x)
+                    r2.children[j].appendChild(xiz);
+                else if (matrix[1][j] == vazio)
+                    removeElemento(r2.children[j]);
+
+                if (matrix[2][j] == circulo)
+                    r3.children[j].appendChild(bolinha);
+                else if (matrix[2][j] == x)
+                    r3.children[j].appendChild(xiz);
+                else if (matrix[2][j] == vazio)
+                    removeElemento(r3.children[j]);
+            }
+        }
+        function ouvinte(i, j) {
+
+            return function verifica() {
+                if (gamer && i < 3 && j < 3 && matrix[i][j] == vazio) {
+                    contador++;
+                    var lastTurn = tipoElemento;
+                    if (tipoElemento == 1) {
+                        matrix[i][j] = x;
+                        tipoElemento = 2;
+                    } else {
+                        matrix[i][j] = circulo;
+                        tipoElemento = 1;
+                    }
+                    if (condicao01() || condicao02() || condicao03() || condicao04()) {
+                        gamer = false;
+                        if (lastTurn == 1)
+                            vencedor.textContent = "Ganhador: X";
+                        else
+                            vencedor.textContent = "Ganhador: O";
+                    } else if (contador == 9) {
+                        gamer = false;
+                        vencedor.textContent = "Empate!";
+
+                    }
+                    atualizaJogador();
+                    atualizaElemento(i, j);
+
+                }
+            }
+
+        }
+        function condicao01() {
+            for (var j = 0; j < 3; j++) {
+                if ((matrix[0][j] > vazio) && matrix[0][j] == matrix[1][j] && matrix[1][j] == matrix[2][j]) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        function condicao02() {
+            for (var i = 0; i < 3; i++) {
+                if ((matrix[i][0] > vazio) && matrix[i][0] == matrix[i][1] && matrix[i][1] == matrix[i][2]) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        function condicao03() {
+            if ((matrix[0][0] > vazio) && matrix[0][0] == matrix[1][1] && matrix[1][1] == matrix[2][2]) {
+                return true;
+            }
+            else return false;
+        }
+        function condicao04() {
+            if ((matrix[0][2] > vazio) && matrix[0][2] == matrix[1][1] && matrix[1][1] == matrix[2][0]) {
+                return true;
+            }
+            else return false;
+        }
+        function addOuvinte() {
+            for (var j = 0; j < 3; j++) {
+                r1.children[j].addEventListener("click", ouvinte(0, j));
+                r2.children[j].addEventListener("click", ouvinte(1, j));
+                r3.children[j].addEventListener("click", ouvinte(2, j));
+            }
+        }
+        function atualizaElemento(i, j) {
+            var bolinha = document.createElement("img");
+            bolinha.src = "circulo.png";
+            bolinha.width = "60";
+            bolinha.height = "60";
+
+            var xiz = document.createElement("img");
+            xiz.src = "x.png";
+            xiz.width = "70";
+            xiz.height = "70";
+
+            if (i == 0) {
+                r1.children[j].children = "";
+                if (matrix[i][j] == circulo)
+                    r1.children[j].appendChild(bolinha);
+                else if (matrix[i][j] == x)
+                    r1.children[j].appendChild(xiz);
+                else if (matrix[i][j] == vazio)
+                    removeElemento(r1.children[j]);
+
+            }
+            else if (i == 1) {
+                r2.children[j].children = "";
+                if (matrix[i][j] == circulo)
+                    r2.children[j].appendChild(bolinha);
+                else if (matrix[i][j] == x)
+                    r2.children[j].appendChild(xiz);
+                else if (matrix[i][j] == vazio)
+                    removeElemento(r2.children[j]);
+            }
+            else if (i == 2) {
+                r3.children[j].children = "";
+                if (matrix[i][j] == circulo)
+                    r3.children[j].appendChild(bolinha);
+                else if (matrix[i][j] == x)
+                    r3.children[j].appendChild(xiz);
+                else if (matrix[i][j] == vazio)
+                    removeElemento(r3.children[j]);
+            }
+        }
+        jogoY.addEventListener("click", function novoJogo() {
+            tipoElemento = 1;
+            gamer = true;
+            vencedor.textContent = "";
+
+            apagaMatrix();
+            matrixP();
+            atualizaJogador();
+        });
+        apagaMatrix();
+        atualizaJogador();
+        matrixP();
+        addOuvinte();
+
+
+    </script>
+</body>
+
+</html>
