@@ -5,7 +5,23 @@
     <meta charset="UTF-8">
     <title>Knight’s Tour Problem</title>
     <style>
-        #casa {
+        body {
+            background-image: url(header-xadrez.jpg);
+        }
+        h1 {
+            margin-left: 58px;
+            color: white;
+        }
+        #tabuleiro {
+            display: block;
+            border-style: solid;
+            border-color: black;
+            background-color: lightgray;
+            width: 436px;
+            height: 422px;
+            padding: 5px;
+        }
+        #casaBranca {
             display: inline-grid;
             border: solid 1px black;
             width: 50px;
@@ -15,71 +31,279 @@
             margin-bottom: -4px;
             background-color: white;
         }
-
-        #tabuleiro {
-            display: block;
-            border-style: solid;
-            border-color: black;
-            background-color: lightgray;
-            width: 416px;
-            height: 416px;
-            padding: 5px;
+        #casaPreta {
+            display: inline-grid;
+            border: solid 1px black;
+            width: 50px;
+            height: 50px;
+            margin-top: auto;
+            margin-left: auto;
+            margin-bottom: -4px;
+            background-color: rgb(0, 0, 0);
+        }
+        #cavalo {
+            width: 30px;
+            height: 30px;
+            margin-left: 9px;
+            margin-top: 9px;
+            position: absolute;
+        }
+        button {
+            width: 200px;
+            height: 50px;
+            margin-left: 9px;
+            visibility: hidden;
         }
     </style>
 </head>
 
 <body>
-    <h1 style="margin-left: 58px">Knight’s Tour Problem</h1>
-    <div id="tabuleiro"></div>
+    <h1>Knight’s Tour Problem</h1>
+    <table>
+        <tbody id="tabuleiro"></tbody>
+    </table>
+
+    <button id="auto">Auto</button>
+    <button id="reset">Reset</button>
 
     <script>
-        var matriz = [];
         var tab = document.getElementById("tabuleiro");
-
-        for (var i = 0; i < 8; i++) {
-            matriz[i] = [];
-            for (var j = 0; j < 8; j++) {
-                var novoDiv = document.createElement("div");
-                novoDiv.id = "casa";
-                matriz[i][j] = novoDiv;
-                tab.appendChild(matriz[i][j]);
+        var bAuto = document.getElementById("auto");
+        var bReset = document.getElementById("reset");
+        var cont = 0; //conta o numeros de jogadas realizadas
+        var primeiraJogada = true;
+        var casasVerdes = {}; //conta a quantidade de possibilidade de movimento em cada casa
+        inicia();
+        function inicia() {
+            for (var linha = 0; linha < 8; linha++) {
+                var novoTr = document.createElement("tr");
+                tab.appendChild(novoTr);
+                for (var coluna = 0; coluna < 8; coluna++) {
+                    var novoTd = document.createElement("td");
+                    novoTd.classList = "casa";
+                    if ((linha % 2 == 0 && coluna % 2 != 0) || (linha % 2 != 0 && coluna % 2 == 0))
+                        novoTd.id = "casaPreta";
+                    else
+                        novoTd.id = "casaBranca";
+                    novoTd.addEventListener("click", colocaCavalo(linha, coluna));
+                    novoTr.appendChild(novoTd);
+                }
             }
         }
-
-        var img = document.createElement("img");
-        img.src = "Cavalo.png";
-        img.style.width = "30px";
-        img.style.height = "30px";
-        img.style.marginLeft = "9px";
-        img.style.marginTop = "9px";
-        img.style.position = "absolute";
-        document.getElementById('casa').appendChild(img);
-
-        matriz[0][0].addEventListener("click", primeiraJogada(0, 0))
-
-
-        function primeiraJogada(i, j) {
+        function colocaCavalo(linha, coluna) {
+            return function () {
+                //se for a primeira jogada deixa colocar o cavalo em qualquer lugar e disponibiliza os botões
+                if (primeiraJogada) {
+                    cont++;
+                    this.innerHTML = cont;
+                    this.style.backgroundColor = "yellow";
+                    opcoes(linha, coluna, primeiraJogada);
+                    primeiraJogada = false;
+                    bAuto.style.visibility = "visible";
+                    bReset.style.visibility = "visible";
+                    bAuto.addEventListener("click", autoWin(linha, coluna, primeiraJogada));
+                    bReset.addEventListener("click", reseta);
+                }
+                //se não verifica as possibilidades de movimento e se ganhou
+                else {
+                    if (this.style.backgroundColor == "green") {
+                        cont++;
+                        this.innerHTML = cont;
+                        this.style.backgroundColor = "yellow";
+                        opcoes(linha, coluna, primeiraJogada);
+                        if (cont == 64) {
+                            alert("PARABÉNS! Você venceu!");
+                            reseta();
+                        }
+                    }
+                }
+            }
+        }
+        //verifica as possibilidades de movimento
+        function opcoes(linha, coluna, primeiraJogada) {
+            var tab = document.getElementById("tabuleiro");
+            casas = tab.getElementsByTagName("tr");
+            var linhaMais2 = linha + 2;
+            var colunaMais1 = coluna + 1;
+            var linhaMais1 = linha + 1;
+            var colunaMais2 = coluna + 2;
+            var linhaMenos2 = linha - 2;
+            var colunaMenos1 = coluna - 1;
+            var linhaMenos1 = linha - 1;
+            var colunaMenos2 = coluna - 2;
             
-            matriz[i][j].style.backgroundColor = "yellow";
-            matriz[i + 1][j + 2].style.backgroundColor = "green";
-            matriz[i + 2][j + 1].style.backgroundColor = "green";
-
-            matriz[1][2].addEventListener("click", moveCavalo(i, j));
-            matriz[2][1].addEventListener("click", moveCavalo);
+            casasVerdes = 0;
+            limpaCores(primeiraJogada); //retira as cores verdes do tabuleiro
+            if (linhaMais1 < 8 && colunaMais2 < 8) { //verifica se está dentro do tabuleiro
+                casas = tab.getElementsByTagName("tr");
+                for (var i = 0; i <= linhaMais1; i++) { //encontra a linha onde está o cavalo
+                    var numCasa = casas[i];
+                }
+                casas = numCasa.getElementsByTagName("td");
+                for (var j = 0; j <= colunaMais2; j++) { //encontra a coluna onde está o cavalo
+                    var casa = casas[j];
+                }
+                //verifica se pode andar pra lá
+                if ((casa.style.backgroundColor == "yellow" || casa.style.backgroundColor == "red") && !primeiraJogada)
+                    casa.style.backgroundColor = "red";
+                else { //adiciona verde as possiveis casas e +1 no contador
+                    casa.style.backgroundColor = "green";
+                    casasVerdes++;
+                }
+            }
+            if (linhaMais1 < 8 && colunaMenos2 >= 0) {
+                casas = tab.getElementsByTagName("tr");
+                for (var i = 0; i <= linhaMais1; i++) {
+                    var numCasa = casas[i];
+                }
+                casas = numCasa.getElementsByTagName("td");
+                for (var j = 0; j <= colunaMenos2; j++) {
+                    var casa = casas[j];
+                }
+                if ((casa.style.backgroundColor == "yellow" || casa.style.backgroundColor == "red") && !primeiraJogada)
+                    casa.style.backgroundColor = "red";
+                else {
+                    casa.style.backgroundColor = "green";
+                    casasVerdes++;
+                }
+            }
+            if (linhaMais2 < 8 && colunaMais1 < 8) {
+                casas = tab.getElementsByTagName("tr");
+                for (var i = 0; i <= linhaMais2; i++) {
+                    var numCasa = casas[i];
+                }
+                casas = numCasa.getElementsByTagName("td");
+                for (var j = 0; j <= colunaMais1; j++) {
+                    var casa = casas[j];
+                }
+                if ((casa.style.backgroundColor == "yellow" || casa.style.backgroundColor == "red") && !primeiraJogada)
+                    casa.style.backgroundColor = "red";
+                else {
+                    casa.style.backgroundColor = "green";
+                    casasVerdes++;
+                }
+            }
+            if (linhaMais2 < 8 && colunaMenos1 >= 0) {
+                casas = tab.getElementsByTagName("tr");
+                for (var i = 0; i <= linhaMais2; i++) {
+                    var numCasa = casas[i];
+                }
+                casas = numCasa.getElementsByTagName("td");
+                for (var j = 0; j <= colunaMenos1; j++) {
+                    var casa = casas[j];
+                }
+                if ((casa.style.backgroundColor == "yellow" || casa.style.backgroundColor == "red") && !primeiraJogada)
+                    casa.style.backgroundColor = "red";
+                else {
+                    casa.style.backgroundColor = "green";
+                    casasVerdes++;
+                }
+            }
+            if (linhaMenos1 >= 0 && colunaMais2 < 8) {
+                casas = tab.getElementsByTagName("tr");
+                for (var i = 0; i <= linhaMenos1; i++) {
+                    var numCasa = casas[i];
+                }
+                casas = numCasa.getElementsByTagName("td");
+                for (var j = 0; j <= colunaMais2; j++) {
+                    var casa = casas[j];
+                }
+                if ((casa.style.backgroundColor == "yellow" || casa.style.backgroundColor == "red") && !primeiraJogada)
+                    casa.style.backgroundColor = "red";
+                else {
+                    casa.style.backgroundColor = "green";
+                    casasVerdes++;
+                }
+            }
+            if (linhaMenos1 >= 0 && colunaMenos2 >= 0) {
+                casas = tab.getElementsByTagName("tr");
+                for (var i = 0; i <= linhaMenos1; i++) {
+                    var numCasa = casas[i];
+                }
+                casas = numCasa.getElementsByTagName("td");
+                for (var j = 0; j <= colunaMenos2; j++) {
+                    var casa = casas[j];
+                }
+                if ((casa.style.backgroundColor == "yellow" || casa.style.backgroundColor == "red") && !primeiraJogada)
+                    casa.style.backgroundColor = "red";
+                else {
+                    casa.style.backgroundColor = "green";
+                    casasVerdes++;
+                }
+            }
+            if (linhaMenos2 >= 0 && colunaMais1 < 8) {
+                casas = tab.getElementsByTagName("tr");
+                for (var i = 0; i <= linhaMenos2; i++) {
+                    var numCasa = casas[i];
+                }
+                casas = numCasa.getElementsByTagName("td");
+                for (var j = 0; j <= colunaMais1; j++) {
+                    var casa = casas[j];
+                }
+                if ((casa.style.backgroundColor == "yellow" || casa.style.backgroundColor == "red") && !primeiraJogada)
+                    casa.style.backgroundColor = "red";
+                else {
+                    casa.style.backgroundColor = "green";
+                    casasVerdes++;
+                }
+            }
+            if (linhaMenos2 >= 0 && colunaMenos1 >= 0) {
+                casas = tab.getElementsByTagName("tr");
+                for (var i = 0; i <= linhaMenos2; i++) {
+                    var numCasa = casas[i];
+                }
+                casas = numCasa.getElementsByTagName("td");
+                for (var j = 0; j <= colunaMenos1; j++) {
+                    var casa = casas[j];
+                }
+                if ((casa.style.backgroundColor == "yellow" || casa.style.backgroundColor == "red") && !primeiraJogada)
+                    casa.style.backgroundColor = "red";
+                else {
+                    casa.style.backgroundColor = "green";
+                    casasVerdes++;
+                }
+            }
         }
-
-        function moveCavalo(i, j) {
-            matriz[i][j].style.backgroundColor = "red";
-            var img = document.createElement("img");
-            img.src = "Cavalo.png";
-            img.style.width = "30px";
-            img.style.height = "30px";
-            img.style.marginLeft = "9px";
-            img.style.marginTop = "9px";
-            img.style.position = "absolute";
-            this.appendChild(img);
+        //tira os verdes atuais do tabuleiro
+        function limpaCores(primeiraJogada) {
+            var tab = document.getElementById("tabuleiro");
+            var casas = tab.getElementsByTagName("tr");
+            if (!primeiraJogada)
+                for (var i = 0; i < 8; i++) {
+                    var numLinha = casas[i];
+                    var numColuna = numLinha.getElementsByTagName("td");
+                    for (var j = 0; j < 8; j++) {
+                        var casa = numColuna[j];
+                        if ((i % 2 == 0 && j % 2 != 0) || (i % 2 != 0 && j % 2 == 0)) {
+                            if (casa.style.backgroundColor != "red" && casa.style.backgroundColor != "yellow")
+                                casa.style.backgroundColor = "black";
+                        }
+                        else if (casa.style.backgroundColor != "red" && casa.style.backgroundColor != "yellow")
+                            casa.style.backgroundColor = "white";
+                    }
+                }
         }
-
+        //reinicia o jogo
+        function reseta() {
+            var tab = document.getElementById("tabuleiro");
+            var casas = tab.getElementsByTagName("tr");
+            while (tab.firstChild) {
+                tab.removeChild(tab.firstChild);
+            }
+            bReset.style.visibility = "hidden";
+            bAuto.style.visibility = "hidden";
+            primeiraJogada = true;
+            cont = 0;
+            inicia();
+        }
+        //era pra ganhar sozinho kkk
+        function autoWin(linha, coluna, primeiraJogada) {
+            for (i=0; i<64; i++) //acho que o problema pode estar na parada do loop
+            opcoes(linha, coluna, primeiraJogada); //chama a função para saber qual jogada tem menos movimentos 
+            var menorPossivel = 100;
+            if(casasVerdes< menorPossivel)
+                menorPossivel = casasVerdes;
+        }
     </script>
 </body>
 
